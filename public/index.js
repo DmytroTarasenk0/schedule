@@ -1,5 +1,17 @@
+Date.prototype.getWeek = function() {
+    var jan1 = new Date(this.getFullYear(), 0, 1);
+    var jan1Day = jan1.getDay() === 0 ? 7 : jan1.getDay(); // Su is 7 for now(no longer 0)
+    var weekStart = new Date(jan1);
+    weekStart.setDate(jan1.getDate() - (jan1Day - 1));
+
+    var today = new Date(this.getFullYear(), this.getMonth(), this.getDate());
+    var diff = today - weekStart;
+    return 1 + Math.floor(diff / (7 * 24 * 60 * 60 * 1000));
+}
+
 let currentYear = new Date().getFullYear();
 let currentMonth = new Date().getMonth();
+let currentWeek = new Date().getWeek();
 
 function updateClock() {
     const now = new Date();
@@ -14,12 +26,12 @@ function renderMiniCalendar(year, month) {
 
     const day1 = new Date(year, month, 1);
     const today = new Date();
-    const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    const days = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
     title.textContent = `${day1.toLocaleString('en-US', { month: 'long' })} ${year}`;
     let html = days.map(d => `<div class="calendar-day calendar-day-header">${d}</div>`).join('');
-    
-    let weekDay1 = day1.getDay();
+
+    let weekDay1 = (day1.getDay() + 6) % 7;
     let daysInMonth = new Date(year, month + 1, 0).getDate();
 
     for (let i = weekDay1 - 1; i >= 0; i--) {
@@ -37,7 +49,6 @@ function renderMiniCalendar(year, month) {
         let day = new Date(year, month, new Date(year, month + 1, 0).getDate() + i).getDate();
         html += `<div class="calendar-day calendar-day-another-month">${day}</div>`;
     }
-    
     grid.innerHTML = html;
 }
 
@@ -59,3 +70,63 @@ document.getElementById('next-month').onclick = () => {
 };
 
 renderMiniCalendar(currentYear, currentMonth);
+
+function getWeekStartDate(year, week) {
+    var jan1 = new Date(year, 0, 1);
+    var jan1Day = jan1.getDay() === 0 ? 7 : jan1.getDay();
+    var weekStart = new Date(jan1);
+    weekStart.setDate(jan1.getDate() - (jan1Day - 1) + (week - 1) * 7);
+    return weekStart;
+}
+
+function renderWeekGrid(year, week) {
+    const title = document.getElementById('week-num');
+    const grid = document.getElementById('week-grid');
+    const days = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+
+    const weekStart = getWeekStartDate(year, week);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    title.textContent = `Week ${week}: 
+    from ${weekStart.getDate().toString().padStart(2, '0')}.${(weekStart.getMonth() + 1).toString().padStart(2, '0')} 
+    to ${weekEnd.getDate().toString().padStart(2, '0')}.${(weekEnd.getMonth() + 1).toString().padStart(2, '0')}`;
+
+    let html = days.map((d, i) => {
+        const date = new Date(weekStart);
+        date.setDate(weekStart.getDate() + i);
+        return `<div class="week-date-header">${d} ${date.getDate().toString().padStart(2, '0')}</div>`;
+    }).join('');
+    grid.innerHTML = html;
+}
+
+document.getElementById('prev-week').onclick = () => {
+    currentWeek--;
+    if (currentWeek < 1) {
+        currentYear--;
+        let lastDayPrevYear = new Date(currentYear, 11, 31);
+        currentWeek = lastDayPrevYear.getWeek();
+    }
+    let weekStart = getWeekStartDate(currentYear, currentWeek);
+    currentMonth = weekStart.getMonth();
+    renderWeekGrid(currentYear, currentWeek);
+    renderMiniCalendar(currentYear, currentMonth);
+};
+
+document.getElementById('next-week').onclick = () => {
+    let lastDayOfYear = new Date(currentYear, 11, 31);
+    let maxWeek = lastDayOfYear.getWeek();
+    currentWeek++;
+    if (currentWeek > maxWeek) {
+        currentWeek = 1;
+        currentYear++;
+        currentMonth = 0;
+    } else {
+        let weekStart = getWeekStartDate(currentYear, currentWeek);
+        currentMonth = weekStart.getMonth();
+    }
+    renderWeekGrid(currentYear, currentWeek);
+    renderMiniCalendar(currentYear, currentMonth);
+};
+
+renderWeekGrid(currentYear, currentWeek);

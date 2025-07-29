@@ -94,11 +94,11 @@ body {
     z-index: 1;
 }
 
-#prev-month {
+#prev-month, #prev-week {
     left: 0;
 }
 
-#next-month {
+#next-month, #next-week {
     right: 0;
 }
 
@@ -146,4 +146,46 @@ body {
     border: none;
     border-top: 1px solid var(--border-muted);
     margin: 0.5rem 0 0.7rem 0;
+}
+
+#week-calendar {
+    position: relative;
+    margin: 3rem 4rem 3rem 2rem;
+    color: var(--text);
+    border-radius: 12px;
+    padding: 1rem;
+    width: 100%;
+    box-shadow: 0 2px 10px 0 rgba(0,0,120,0.2);
+    font-family: Arial, sans-serif;
+}
+
+.week-header {
+    position: relative;
+    text-align: left;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+    height: 2rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 20%;
+}
+
+#week-num {
+    margin: 0 auto;
+    pointer-events: none;
+}
+
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 150px;
+}
+
+.week-date-header {
+    background: none;
+    color: var(--primary);
+    font-weight: bold;
 }
