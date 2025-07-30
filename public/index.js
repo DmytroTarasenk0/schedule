@@ -35,19 +35,30 @@ function renderMiniCalendar(year, month) {
     let daysInMonth = new Date(year, month + 1, 0).getDate();
 
     for (let i = weekDay1 - 1; i >= 0; i--) {
-        let day = new Date(year, month - 1, new Date(year, month, 0).getDate() - i).getDate();
-        html += `<div class="calendar-day calendar-day-another-month">${day}</div>`;
+        let day = new Date(year, month - 1, new Date(year, month, 0).getDate() - i);
+        let isToday = today.getFullYear() === day.getFullYear() && 
+        today.getMonth() === day.getMonth() && 
+        today.getDate() === day.getDate();
+
+        html += `<div class="calendar-day${isToday ? ' calendar-day-today' : ' calendar-day-another-month'}">${day.getDate()}</div>`;
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
-        let isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+        let isToday = today.getFullYear() === year && 
+        today.getMonth() === month && 
+        today.getDate() === day;
+
         html += `<div class="calendar-day${isToday ? ' calendar-day-today' : ''}">${day}</div>`;
     }
 
     let totalCells = weekDay1 + daysInMonth;
     for (let i = 1; i <= 42 - totalCells; i++) {
-        let day = new Date(year, month, new Date(year, month + 1, 0).getDate() + i).getDate();
-        html += `<div class="calendar-day calendar-day-another-month">${day}</div>`;
+        let day = new Date(year, month, new Date(year, month + 1, 0).getDate() + i);
+        let isToday = today.getFullYear() === day.getFullYear() && 
+        today.getMonth() === day.getMonth() && 
+        today.getDate() === day.getDate();
+
+        html += `<div class="calendar-day${isToday ? ' calendar-day-today' : ' calendar-day-another-month'}">${day.getDate()}</div>`;
     }
     grid.innerHTML = html;
 }
@@ -60,6 +71,7 @@ document.getElementById('prev-month').onclick = () => {
     }
     renderMiniCalendar(currentYear, currentMonth);
 };
+
 document.getElementById('next-month').onclick = () => {
     currentMonth++;
     if (currentMonth > 11) {
@@ -105,7 +117,18 @@ document.getElementById('prev-week').onclick = () => {
     if (currentWeek < 1) {
         currentYear--;
         let lastDayPrevYear = new Date(currentYear, 11, 31);
-        currentWeek = lastDayPrevYear.getWeek();
+        let lastWeek = lastDayPrevYear.getWeek();
+        let lastWeekStart = getWeekStartDate(currentYear, lastWeek);
+        let nextJan1 = new Date(currentYear + 1, 0, 1);
+        
+        if (
+            nextJan1 >= lastWeekStart &&
+            nextJan1 < new Date(lastWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
+        ) {
+            currentWeek = lastWeek - 1;
+        } else {
+            currentWeek = lastWeek;
+        }
     }
     let weekStart = getWeekStartDate(currentYear, currentWeek);
     currentMonth = weekStart.getMonth();
@@ -116,6 +139,15 @@ document.getElementById('prev-week').onclick = () => {
 document.getElementById('next-week').onclick = () => {
     let lastDayOfYear = new Date(currentYear, 11, 31);
     let maxWeek = lastDayOfYear.getWeek();
+    let maxWeekStart = getWeekStartDate(currentYear, maxWeek);
+    let nextJan1 = new Date(currentYear + 1, 0, 1);
+    
+    if (
+        nextJan1 >= maxWeekStart &&
+        nextJan1 < new Date(maxWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
+    ) {
+        maxWeek = maxWeek - 1;
+    }
     currentWeek++;
     if (currentWeek > maxWeek) {
         currentWeek = 1;
