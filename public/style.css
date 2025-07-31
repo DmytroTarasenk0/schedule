@@ -65,24 +65,18 @@ body {
 }
 
 #mini-calendar {
-    margin: 2rem 0 2rem 2rem;
+    margin: 3rem 0 2rem 2rem;
     background: var(--bg-dark);
     color: var(--text);
     border-radius: 12px;
     padding: 1rem;
     width: 240px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px var(--info);
     font-family: Arial, sans-serif;
     flex-shrink: 0;
-}
 
-.vertical-separator {
-    width: 2px;
-    background: var(--border-muted);
-    height: 90vh;
-    margin: 2rem 2rem 2rem 0;
-    border-radius: 2px;
-    flex-shrink: 0;
+    position: sticky;
+    top: 3rem;
 }
 
 .calendar-header {
@@ -213,6 +207,11 @@ body {
     padding: 0.5rem;
     border-radius: 20px;
     font-size: 1.2rem;
+}
+
+.week-date-today {
+    background: var(--primary);
+    color: var(--bg-dark);
 }
 
 .time-zone {

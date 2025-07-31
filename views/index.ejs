@@ -3,6 +3,7 @@
 <head>
     <title>Schedule</title>
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/modal.css">
 </head>
 <body>
     <div class="container">
@@ -19,8 +20,6 @@
             <div class="btn-add-event" id = "add-event">Add Event</div>
         </div>
 
-        <div class="vertical-separator"></div>
-
         <div id="week-calendar">
             <div class="week-header">
                 <button id="prev-week" class="calendar-arrow">&#8630;</button>
@@ -31,6 +30,46 @@
         </div>
 
     </div>
+    <section class="modal-container" id="modal">
+            <section class="modal">
+                <button class="close-btn" id="close">x</button>
+                <div class="modal-content">
+                    <h1 class="modal-title">Add Event</h1>
+                    <form class="modal-form">
+                        <div>
+                            <label for="event-name">Event Name</label>
+                            <input
+                            type="text"
+                            id="event-name"
+                            placeholder="Enter event name"
+                            class="form-input"
+                            required
+                            />
+                        </div>
+                        <div>
+                            <label for="event-date">Day Date</label>
+                            <input
+                            type="date"
+                            id="event-date"
+                            class="form-input"
+                            required
+                            />
+                        </div>
+                        <div>
+                            <label for="event-time">Time of the Day</label>
+                            <input
+                            type="time"
+                            id="event-time"
+                            class="form-input"
+                            required
+                            />
+                        </div>
+                        <input type="submit" value="Add Event" class="submit-btn" />
+                    </form>
+                </div>
+            </section>
+        </section>
+
     <script src="/index.js"></script>
 </body>
 </html>
