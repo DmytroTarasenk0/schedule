@@ -96,6 +96,7 @@ function renderWeekGrid(year, week) {
     const grid = document.getElementById('week-grid');
     const days = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
+    const today = new Date();
     const weekStart = getWeekStartDate(year, week);
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
@@ -104,11 +105,25 @@ function renderWeekGrid(year, week) {
     from ${weekStart.getDate().toString().padStart(2, '0')}.${(weekStart.getMonth() + 1).toString().padStart(2, '0')} 
     to ${weekEnd.getDate().toString().padStart(2, '0')}.${(weekEnd.getMonth() + 1).toString().padStart(2, '0')}`;
 
-    let html = days.map((d, i) => {
+    let timeZone = today.toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ')[2];
+    let html = `<div class="time-zone">${timeZone}</div>`
+    
+    html += days.map((d, i) => {
         const date = new Date(weekStart);
         date.setDate(weekStart.getDate() + i);
         return `<div class="week-date-header">${d} ${date.getDate().toString().padStart(2, '0')}</div>`;
     }).join('');
+
+    for (let i = 0; i < 176; i++) {
+        if (i % 8 === 0) {
+            let row = Math.floor(i / 7);
+            let isNow = today.getHours() === row;
+            html += `<div class="hour-name ${isNow ? ' hour-now' : ' '}">${(row).toString().padStart(2, '0')}:00</div>`
+        } else {
+            html += `<div class="hour-cell id = hour-cell-${i}">cum</div>`
+        }
+    }
+
     grid.innerHTML = html;
 }
 
@@ -162,3 +177,7 @@ document.getElementById('next-week').onclick = () => {
 };
 
 renderWeekGrid(currentYear, currentWeek);
+
+document.getElementById('add-event').onclick = () => {
+    
+}

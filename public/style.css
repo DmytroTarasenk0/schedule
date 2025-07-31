@@ -23,6 +23,8 @@ body {
     color: var(--text);
     background: var(--bg-dark);
     min-height: 100vh;
+    width: auto;
+    overflow-x: clip;
 }
 
 .container {
@@ -33,6 +35,21 @@ body {
     width: 100vw;
 }
 
+.btn-add-event {
+    padding: 15px 20px;
+    margin: 40px;
+    border-radius: 15px;
+    background: linear-gradient(to bottom, var(--primary), var(--secondary));
+    color: var(--text);
+    transition: all 0.5s;
+    font-weight: bold;
+    text-align: center;
+}
+
+.btn-add-event:hover {
+    color: var(--text-muted);
+    background: linear-gradient(to bottom, var(--secondary), var(--primary));
+}
 
 #live-timer {
     position: static;
@@ -181,8 +198,10 @@ body {
 
 .week-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 150px;
+    grid-template-columns: repeat(8, 0.5fr);
+    gap: 10px;
+    margin-right: 1rem;
+    overflow-x: clip;
 }
 
 .week-date-header {
@@ -193,4 +212,32 @@ body {
     align-content: center;
     padding: 0.5rem;
     border-radius: 20px;
+    font-size: 1.2rem;
+}
+
+.time-zone {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-align: center;
+    align-content: center;
+}
+
+.hour-name {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    text-align: center;
+    align-content: center;
+}
+
+.hour-now {
+    color: var(--danger);
+}
+
+.hour-cell {
+    background: var(--bg-light);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 1.25rem;
+    font-size: 0.8rem;
+    text-align: start;
 }
