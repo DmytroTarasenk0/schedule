@@ -1,18 +1,14 @@
-Date.prototype.getWeek = function() {
-    var jan1 = new Date(this.getFullYear(), 0, 1);
-    var jan1Day = jan1.getDay() === 0 ? 7 : jan1.getDay(); // Su is 7 for now(no longer 0)
-    var weekStart = new Date(jan1);
-    weekStart.setDate(jan1.getDate() - (jan1Day - 1));
-
-    var today = new Date(this.getFullYear(), this.getMonth(), this.getDate());
-    var diff = today - weekStart;
-    return 1 + Math.floor(diff / (7 * 24 * 60 * 60 * 1000));
-}
+Date.prototype.getWeek = function () {
+    var date = new Date(this.getTime());
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+    var week1 = new Date(date.getFullYear(), 0, 4);
+    return 1 + Math.round(((date - week1) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+};
 
 let currentYear = new Date().getFullYear();
 let currentMonth = new Date().getMonth();
 let currentWeek = new Date().getWeek();
-const modal = document.getElementById("modal");
 
 function updateClock() {
     const now = new Date();
@@ -85,11 +81,12 @@ document.getElementById('next-month').onclick = () => {
 renderMiniCalendar(currentYear, currentMonth);
 
 function getWeekStartDate(year, week) {
-    var jan1 = new Date(year, 0, 1);
-    var jan1Day = jan1.getDay() === 0 ? 7 : jan1.getDay();
-    var weekStart = new Date(jan1);
-    weekStart.setDate(jan1.getDate() - (jan1Day - 1) + (week - 1) * 7);
-    return weekStart;
+    let simple = new Date(year, 0, 4);
+    let dayOfWeek = (simple.getDay() + 6) % 7;
+    let monday = new Date(simple);
+    monday.setDate(simple.getDate() - dayOfWeek);
+    monday.setDate(monday.getDate() + (week - 1) * 7);
+    return monday;
 }
 
 function renderWeekGrid(year, week) {
@@ -136,20 +133,11 @@ document.getElementById('prev-week').onclick = () => {
     currentWeek--;
     if (currentWeek < 1) {
         currentYear--;
-        let lastDayPrevYear = new Date(currentYear, 11, 31);
-        let lastWeek = lastDayPrevYear.getWeek();
-        let lastWeekStart = getWeekStartDate(currentYear, lastWeek);
-        let nextJan1 = new Date(currentYear + 1, 0, 1);
-        
-        if (
-            nextJan1 >= lastWeekStart &&
-            nextJan1 < new Date(lastWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
-        ) {
-            currentWeek = lastWeek - 1;
-        } else {
-            currentWeek = lastWeek;
-        }
+
+        let dec28 = new Date(currentYear, 11, 28);
+        currentWeek = dec28.getWeek();
     }
+
     let weekStart = getWeekStartDate(currentYear, currentWeek);
     currentMonth = weekStart.getMonth();
     renderWeekGrid(currentYear, currentWeek);
@@ -157,17 +145,9 @@ document.getElementById('prev-week').onclick = () => {
 };
 
 document.getElementById('next-week').onclick = () => {
-    let lastDayOfYear = new Date(currentYear, 11, 31);
-    let maxWeek = lastDayOfYear.getWeek();
-    let maxWeekStart = getWeekStartDate(currentYear, maxWeek);
-    let nextJan1 = new Date(currentYear + 1, 0, 1);
-    
-    if (
-        nextJan1 >= maxWeekStart &&
-        nextJan1 < new Date(maxWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
-    ) {
-        maxWeek = maxWeek - 1;
-    }
+    let dec28 = new Date(currentYear, 11, 28);
+    let maxWeek = dec28.getWeek();
+
     currentWeek++;
     if (currentWeek > maxWeek) {
         currentWeek = 1;
@@ -183,10 +163,40 @@ document.getElementById('next-week').onclick = () => {
 
 renderWeekGrid(currentYear, currentWeek);
 
-document.getElementById('add-event').onclick = () => {
-    modal.classList.add("show-modal");
-}
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById("modal");
+    const form = document.getElementById("event-form");
 
-document.getElementById('close').onclick = () => {
-    modal.classList.remove("show-modal");
-}
+    document.getElementById('add-event').onclick = () => {
+        modal.classList.add("show-modal");
+    };
+
+    document.getElementById('close').onclick = () => {
+        modal.classList.remove("show-modal");
+    };
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const eventName = document.getElementById('event-name').value.trim();
+        const eventDate = document.getElementById('event-date').value;
+        const eventTime = document.getElementById('event-time').value;
+
+        const eventData = { name: eventName, date: eventDate, time: eventTime };
+
+        fetch('/api/events', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(eventData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log('Saved:', data.message);
+            modal.classList.remove("show-modal");
+            form.reset();
+        })
+        .catch(err => {
+            console.error('Error:', err);
+        });
+    });
+});
