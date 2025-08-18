@@ -207,6 +207,10 @@ body {
     padding: 0.5rem;
     border-radius: 20px;
     font-size: 1.2rem;
+
+    position: sticky;
+    top: 1rem;
+    z-index: 1;
 }
 
 .week-date-today {
@@ -219,6 +223,10 @@ body {
     font-size: 0.75rem;
     text-align: center;
     align-content: center;
+
+    position: sticky;
+    top: 1rem;
+    z-index: 1;
 }
 
 .hour-name {

@@ -25,4 +25,12 @@ router.post('/events', (req, res) => {
     });
 });
 
+router.get('/events', (req, res) => {
+    fs.readFile(eventsFilePath, 'utf8', (err, data) => {
+        if (err) return res.status(500).json({ error: 'Failed to read file' });
+        let events = JSON.parse(data);
+        res.status(200).json(events);
+    });
+});
+
 module.exports = router;

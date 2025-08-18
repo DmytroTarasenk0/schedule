@@ -129,18 +129,49 @@ function renderWeekGrid(year, week) {
     grid.innerHTML = html;
 }
 
+function renderEventsOnGrid(year, week) {
+    fetch('/api/events')
+        .then(res => res.json())
+        .then(events => {
+            const weekStart = getWeekStartDate(year, week);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 7);
+
+            events.forEach(event => {
+                const eventDate = new Date(event.date + 'T' + event.time);
+                if (eventDate >= weekStart && eventDate < weekEnd) {
+                    const dayWeek = (eventDate.getDay() + 6) % 7;
+                    const hour = eventDate.getHours();
+                    const cellIndex = hour * 8 + 1 + dayWeek;
+                    const cell = document.getElementById(`hour-cell-${cellIndex}`);
+                    
+                    if (cell.textContent.trim() === "") {
+                        cell.textContent = event.name + " " + event.time;
+                    } else {
+                        cell.textContent += "\n" + event.name + " " + event.time;
+                    }
+                    cell.style.whiteSpace = "pre-line";
+                    cell.style.background = "var(--warning)";
+                }
+            });
+        });
+}
+
+function updateWeekGridWithEvents() {
+    renderWeekGrid(currentYear, currentWeek);
+    renderEventsOnGrid(currentYear, currentWeek);
+}
+
 document.getElementById('prev-week').onclick = () => {
     currentWeek--;
     if (currentWeek < 1) {
         currentYear--;
-
         let dec28 = new Date(currentYear, 11, 28);
         currentWeek = dec28.getWeek();
     }
-
     let weekStart = getWeekStartDate(currentYear, currentWeek);
     currentMonth = weekStart.getMonth();
-    renderWeekGrid(currentYear, currentWeek);
+    updateWeekGridWithEvents();
     renderMiniCalendar(currentYear, currentMonth);
 };
 
@@ -157,11 +188,11 @@ document.getElementById('next-week').onclick = () => {
         let weekStart = getWeekStartDate(currentYear, currentWeek);
         currentMonth = weekStart.getMonth();
     }
-    renderWeekGrid(currentYear, currentWeek);
+    updateWeekGridWithEvents();
     renderMiniCalendar(currentYear, currentMonth);
 };
 
-renderWeekGrid(currentYear, currentWeek);
+updateWeekGridWithEvents();
 
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById("modal");
@@ -194,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Saved:', data.message);
             modal.classList.remove("show-modal");
             form.reset();
+            updateWeekGridWithEvents();
         })
         .catch(err => {
             console.error('Error:', err);
