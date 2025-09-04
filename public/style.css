@@ -35,7 +35,12 @@ body {
     width: 100vw;
 }
 
-.btn-add-event {
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.btn {
     padding: 15px 20px;
     margin: 40px;
     border-radius: 15px;
@@ -44,11 +49,20 @@ body {
     transition: all 0.5s;
     font-weight: bold;
     text-align: center;
+    cursor: pointer;
 }
 
-.btn-add-event:hover {
+.btn:hover {
     color: var(--text-muted);
     background: linear-gradient(to bottom, var(--secondary), var(--primary));
+}
+
+.link {
+    background: linear-gradient(to left, var(--primary), var(--secondary));
+}
+
+.link:hover {
+    background: linear-gradient(to left, var(--secondary), var(--primary));
 }
 
 #live-timer {
